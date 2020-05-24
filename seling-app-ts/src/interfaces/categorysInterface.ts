@@ -1,6 +1,7 @@
-import { PRODUCTS, PRODUCTS_SALE, CATEGORY } from '../actions/types';
+import { CATEGORY, PROS_OF_CATE } from '../actions/types';
 export interface CategorysState {
-    categorys: any[]
+    categorys: any[],
+    prosOfCate: any[]
 }
 
 interface GetCategoryAction {
@@ -8,4 +9,10 @@ interface GetCategoryAction {
     categorys: any[]
 }
 
-export type CategorysActionTypes = GetCategoryAction;
+interface GetProsByCateAction {
+    type: typeof PROS_OF_CATE,
+    prosOfCate: any[]
+}
+export type CategorysActionTypes =
+    GetCategoryAction
+    | GetProsByCateAction;

@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, Redirect, RouteComponentProps, withRouter } from 'react-router-dom';
 import { Product } from '../../interfaces/productsInterface';
 import { isEmpty } from '../../commonJS/helperFuncs';
 import Title from '../common/Title';
+import { addToCart, getCart } from '../../actions/cartAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+// import { withRouter } from "react-router";
 
 const Product1 = styled.section`
     
@@ -85,52 +89,78 @@ interface Props {
     classname: string,
     title: string
 }
-const Products: React.FC<Props> = ({ products, title, classname }) => {
+const Products: React.FC<Props & RouteComponentProps> = ({ products, title, classname, history }) => {
+    const user = useSelector((state: any) => state.userReducer.currentUser);
+    const dispatch = useDispatch();
+    const addCart = (id) => {
+        if (user) {
+            dispatch(addToCart(user.Id, id));
+        } else {
+            // toggle();
+            history.push('/login');
+            console.log("history", history);
+            console.log("akshdk");
+        }
+
+    }
     return (
         <>
             <Title title={title} />
             <Product1 className="product bg-white py-4">
                 <div className="row">
-                    {products &&
-                        (
-                            products.map((product: Product) => (
-                                <div key={product.Id} className={classname} >
-                                    <ItemProduct>
-                                        <Link to="">
-                                            <Img className="img">
-                                                {!isEmpty(product.Image) ?
-                                                    <img src={product.Image} alt="OPPO Reno3 Pro" />
-                                                    :
-                                                    <img src="/images/no-image.jpg" alt="OPPO Reno3 Pro" />
-                                                }
-                                            </Img>
-                                            <NameProduct>
-                                                {product.Name}
-                                            </NameProduct>
-                                            <div className="price">
-                                                {product.Discount != 0 ?
-                                                    <>
-                                                        <strong>{product.Promotion}₫</strong>
-                                                        <span>{product.Price} ₫</span>
-                                                    </>
-                                                    : <strong>{product.Price}₫</strong>
-                                                }
-                                            </div>
+                    {products.length !== 0 ?
+                        <>
+                            {products &&
+                                (
+                                    products.map((product: Product) => (
+                                        <div key={product.Id} className={classname} >
+                                            <ItemProduct>
+                                                <Link to="">
+                                                    <Img className="img">
+                                                        {!isEmpty(product.Image) ?
+                                                            <img src={product.Image} alt="OPPO Reno3 Pro" />
+                                                            :
+                                                            <img src="/images/no-image.jpg" alt="OPPO Reno3 Pro" />
+                                                        }
+                                                    </Img>
+                                                    <NameProduct>
+                                                        {product.Name}
+                                                    </NameProduct>
+                                                    <div className="price">
+                                                        {product.Discount != 0 ?
+                                                            <>
+                                                                <strong>{product.Promotion}₫</strong>
+                                                                <span>{product.Cost} ₫</span>
+                                                            </>
+                                                            : <strong>{product.Cost}₫</strong>
+                                                        }
+                                                    </div>
 
-                                            <Description>{product.Description}</Description>
-                                            <AddCart>
-                                                <button className="add-to-cart pull-left btn "><i className="fa fa-shopping-cart"></i></button>
-                                                <a className="beta-btn primary" href="">Details <i className="fa fa-chevron-right"></i></a>
-                                            </AddCart>
-                                        </Link>
-                                    </ItemProduct>
+                                                    <Description>{product.Description}</Description>
+                                                    <AddCart>
+                                                        <button className="add-to-cart pull-left btn " onClick={() => addCart(product.Id)}><i className="fa fa-shopping-cart"></i></button>
+                                                        <Link className="beta-btn primary" to={`/product/${product.Id}`}>Details <i className="fa fa-chevron-right"></i></Link>
+                                                    </AddCart>
+                                                </Link>
+                                            </ItemProduct>
 
-                                </div>
-                            ))
-                        )
+                                        </div>
+                                    ))
+                                )
+                            } </>
+                        :
+                        <>
+                            <div className="col-sm-12 pl-2">
+                                <p className="pl-4">Không tìm thấy sản phẩm</p>
+                            </div>
+                        </>
+
                     }
+
                 </div>
             </Product1>
+            <ToastContainer />
+
         </>
 
     )
@@ -140,4 +170,4 @@ Products.propTypes = {
 
 }
 
-export default React.memo(Products)
+export default withRouter(Products)

@@ -22,7 +22,7 @@ const Category: React.FC<Props> = ({ categorys }) => {
 
                 {categorys.map(category => (
                     <Li key={category.CateId}>
-                        <Link to={`/allProsOfCate?cateId=${category.CateId}`}>{category.CateName}</Link>
+                        <Link to={`/allProsOfCate/${category.CateId}`}>{category.CateName}</Link>
                     </Li>
                 ))}
 
